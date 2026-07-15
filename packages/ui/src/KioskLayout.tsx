@@ -2,11 +2,11 @@ import type { ReactNode } from 'react'
 
 interface KioskLayoutProps {
   title: string
-  status: string
+  status?: string
   children: ReactNode
 }
 
-export function KioskLayout({ title, status, children }: KioskLayoutProps) {
+export function KioskLayout({ title, status = 'desconectado', children }: KioskLayoutProps) {
   const statusColor =
     status === 'conectado'
       ? 'bg-emerald-500'
@@ -15,8 +15,8 @@ export function KioskLayout({ title, status, children }: KioskLayoutProps) {
       : 'bg-amber-500'
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="bg-brand-900 text-white px-6 py-4 flex items-center justify-between shadow-md">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+      <header className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between shadow-md">
         <h1 className="text-xl font-bold tracking-wide">OpenSign Enterprise</h1>
         <div className="flex items-center gap-2 text-sm">
           <span>{title}</span>

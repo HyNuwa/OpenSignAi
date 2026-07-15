@@ -1,12 +1,38 @@
 {
   "name": "@opensign/api-core",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "dev": "uvicorn main:app --host 0.0.0.0 --port 8000 --reload",
-    "start": "uvicorn main:app --host 0.0.0.0 --port 8000",
-    "typecheck": "echo 'No typecheck step configured for Python'",
-    "lint": "ruff check .",
-    "test": "pytest"
+    "build": "nest build",
+    "dev": "nest start --watch",
+    "start": "node dist/main",
+    "start:debug": "nest start --debug --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.3.10",
+    "@nestjs/core": "^10.3.10",
+    "@nestjs/platform-express": "^10.3.10",
+    "@nestjs/platform-socket.io": "^10.3.10",
+    "@nestjs/websockets": "^10.3.10",
+    "@opensign/shared-types": "workspace:*",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.3.10",
+    "@nestjs/schematics": "^10.1.2",
+    "@nestjs/testing": "^10.3.10",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.10",
+    "@typescript-eslint/eslint-plugin": "^7.15.0",
+    "@typescript-eslint/parser": "^7.15.0",
+    "eslint": "^8.57.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
   }
 }

@@ -18,7 +18,7 @@ export function SignVideoPanel({ stream }: SignVideoPanelProps) {
       />
       {!stream && (
         <div className="absolute inset-0 flex items-center justify-center text-slate-400">
-          Iniciando cámara...
+          Cámara inactiva
         </div>
       )}
     </div>

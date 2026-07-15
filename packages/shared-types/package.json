@@ -1,5 +1,5 @@
 {
-  "name": "@opensign/ui",
+  "name": "@opensign/shared-types",
   "version": "0.0.0",
   "private": true,
   "main": "./dist/index.js",
@@ -18,13 +18,12 @@
     "lint": "echo 'No lint configured'",
     "test": "echo 'No tests configured'"
   },
-  "peerDependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+  "dependencies": {
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
     "typescript": "^5.4.5"
   }
 }

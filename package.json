@@ -2,7 +2,7 @@
   "name": "opensign-enterprise",
   "private": true,
   "version": "0.0.0",
-  "description": "MVP de OpenSign Enterprise - Plataforma de accesibilidad LSA para sector bancario",
+  "description": "OpenSign Enterprise - Plataforma de accesibilidad LSA para sector bancario",
   "packageManager": "pnpm@9.0.0",
   "scripts": {
     "build": "turbo run build",

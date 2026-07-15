@@ -6,7 +6,4 @@
   html {
     @apply antialiased;
   }
-  body {
-    @apply bg-slate-50 text-slate-900;
-  }
 }

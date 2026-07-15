@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package opensign.ai;
+
+service SignInterpreter {
+  rpc Interpret (PoseFrame) returns (Interpretation);
+}
+
+message Landmark {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+message HandLandmarks {
+  float confidence = 1;
+  repeated Landmark landmarks = 2;
+}
+
+message PoseFrame {
+  int64 timestamp = 1;
+  HandLandmarks left_hand = 2;
+  HandLandmarks right_hand = 3;
+}
+
+message Interpretation {
+  string text = 1;
+  float confidence = 2;
+  string gloss = 3;
+}
