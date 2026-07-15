@@ -46,10 +46,11 @@ out/
 *.tflite
 *.pb
 *.h5
-apps/core-engine/models/
-packages/avatar-assets/**/*.glb
-packages/avatar-assets/**/*.gltf
-!packages/avatar-assets/dummy-avatar.glb
+apps/ai-core/models/
+apps/api-core/models/
+apps/kiosk-web/public/models/**/*.glb
+apps/kiosk-web/public/models/**/*.gltf
+!apps/kiosk-web/public/models/dummy-avatar.glb
 
 # ==========================================
 # Environment Variables & Secrets
