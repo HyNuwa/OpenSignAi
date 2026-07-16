@@ -1,16 +1,20 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { KioskLayout, SignVideoPanel, Button } from '@opensign/ui'
+import { KioskLayout, Button } from '@opensign/ui'
 import { useCamera } from '@/hooks/useCamera'
+import { HandTracker } from './HandTracker'
 import { getSocketClient } from '@/lib/socket-client'
 import { SignSocketEvents } from '@opensign/shared-types'
+import type { PoseFrameDto } from '@opensign/shared-types'
 
 export function KioskClient() {
   const [status, setStatus] = useState<string>('desconectado')
   const [lastInterpretation, setLastInterpretation] = useState<string>('')
   const { stream, error, isLoading, start, stop } = useCamera()
+  const [trackingEnabled, setTrackingEnabled] = useState(false)
   const socketRef = useRef<ReturnType<typeof getSocketClient> | null>(null)
+  const lastSendRef = useRef<number>(0)
 
   const connectSocket = useCallback(() => {
     const socket = getSocketClient()
@@ -35,13 +39,38 @@ export function KioskClient() {
     socket.connect()
   }, [])
 
+  const handleLandmarks = useCallback(
+    (frame: PoseFrameDto) => {
+      const now = Date.now()
+      if (now - lastSendRef.current < 100) return
+      lastSendRef.current = now
+
+      socketRef.current?.emit(SignSocketEvents.LANDMARKS, {
+        event: SignSocketEvents.LANDMARKS,
+        kioskId: 'kiosk-001',
+        payload: frame,
+      })
+    },
+    [],
+  )
+
+  const handleStartCamera = useCallback(async () => {
+    await start()
+    setTrackingEnabled(true)
+  }, [start])
+
+  const handleStopCamera = useCallback(() => {
+    setTrackingEnabled(false)
+    stop()
+  }, [stop])
+
   useEffect(() => {
     connectSocket()
     return () => {
       socketRef.current?.disconnect()
-      stop()
+      handleStopCamera()
     }
-  }, [connectSocket, stop])
+  }, [connectSocket, handleStopCamera])
 
   return (
     <KioskLayout title="Bienvenido" status={status}>
@@ -56,7 +85,17 @@ export function KioskClient() {
           El procesamiento de visión se realiza en este dispositivo. No se envían videos al servidor.
         </p>
 
-        <SignVideoPanel stream={stream} />
+        {stream && trackingEnabled ? (
+          <HandTracker
+            stream={stream}
+            enabled={trackingEnabled}
+            onLandmarks={handleLandmarks}
+          />
+        ) : (
+          <div className="flex w-full max-w-md items-center justify-center rounded-2xl border border-slate-200 bg-slate-100 aspect-video">
+            <p className="text-slate-400">Cámara inactiva</p>
+          </div>
+        )}
 
         {error && (
           <div className="w-full rounded-lg bg-rose-50 p-4 text-sm text-rose-700">
@@ -66,11 +105,11 @@ export function KioskClient() {
 
         <div className="flex gap-3">
           {!stream ? (
-            <Button onClick={start} disabled={isLoading}>
+            <Button onClick={handleStartCamera} disabled={isLoading}>
               {isLoading ? 'Iniciando...' : 'Activar cámara'}
             </Button>
           ) : (
-            <Button variant="secondary" onClick={stop}>
+            <Button variant="secondary" onClick={handleStopCamera}>
               Detener cámara
             </Button>
           )}
