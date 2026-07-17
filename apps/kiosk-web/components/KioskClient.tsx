@@ -28,7 +28,8 @@ export function KioskClient() {
     socket.on('disconnect', () => setStatus('desconectado'))
 
     socket.on(SignSocketEvents.INTERPRETATION, (data: { text: string }) => {
-      setLastInterpretation(data.text)
+      if (!data?.text) return
+      setLastInterpretation((prev) => (prev === data.text ? prev : data.text))
     })
 
     socket.on(SignSocketEvents.ERROR, (err: { message: string }) => {

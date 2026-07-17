@@ -29,6 +29,8 @@ function landmarksToDto(landmarks: NormalizedLandmark[]): HandLandmarksDto['land
   }))
 }
 
+const FRAME_SKIP = 3
+
 export function useHandTracking(options: UseHandTrackingOptions = {}): UseHandTrackingReturn {
   const { onLandmarks } = options
   const [isReady, setIsReady] = useState(false)
@@ -39,6 +41,7 @@ export function useHandTracking(options: UseHandTrackingOptions = {}): UseHandTr
   const landmarkerRef = useRef<HandLandmarker | null>(null)
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const frameIdRef = useRef<number>(0)
+  const frameCountRef = useRef<number>(0)
   const onLandmarksRef = useRef(onLandmarks)
   onLandmarksRef.current = onLandmarks
 
@@ -56,6 +59,8 @@ export function useHandTracking(options: UseHandTrackingOptions = {}): UseHandTr
           },
           runningMode: 'VIDEO',
           numHands: 2,
+          minHandDetectionConfidence: 0.5,
+          minTrackingConfidence: 0.5,
         })
         if (cancelled) return
 
@@ -78,12 +83,21 @@ export function useHandTracking(options: UseHandTrackingOptions = {}): UseHandTr
   const detectLoop = useCallback(() => {
     const video = videoRef.current
     const landmarker = landmarkerRef.current
-    if (!video || !landmarker || video.readyState < 2) {
+    if (!video || !landmarker) return
+
+    if (video.readyState < 2) {
       frameIdRef.current = requestAnimationFrame(detectLoop)
       return
     }
 
-    const results = landmarker.detectForVideo(video, performance.now())
+    frameCountRef.current++
+    if (frameCountRef.current % FRAME_SKIP !== 0) {
+      frameIdRef.current = requestAnimationFrame(detectLoop)
+      return
+    }
+
+    const now = performance.now()
+    const results = landmarker.detectForVideo(video, now)
 
     const leftHand = results.landmarks[0]
     const rightHand = results.landmarks[1]

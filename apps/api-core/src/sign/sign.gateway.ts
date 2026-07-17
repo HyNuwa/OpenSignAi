@@ -38,6 +38,7 @@ export class SignGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     void client.join(data.kioskId)
+    this.signService.resetKiosk(data.kioskId)
     return { event: SignSocketEvents.JOIN_KIOSK, data: { ok: true } }
   }
 
@@ -55,14 +56,18 @@ export class SignGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() message: LandmarksMessageDto,
     @ConnectedSocket() client: Socket,
   ) {
-    const interpretation = await this.signService.interpret(message.payload)
+    const interpretation = await this.signService.interpret(message.kioskId, message.payload)
 
-    this.server.to(message.kioskId).emit(SignSocketEvents.INTERPRETATION, {
-      text: interpretation.text,
-      confidence: interpretation.confidence,
-      gloss: interpretation.gloss,
-    })
+    if (interpretation.text) {
+      this.server.to(message.kioskId).emit(SignSocketEvents.INTERPRETATION, {
+        text: interpretation.text,
+        confidence: interpretation.confidence,
+        gloss: interpretation.gloss,
+      })
+    }
 
-    return { event: SignSocketEvents.INTERPRETATION, data: interpretation }
+    return interpretation.text
+      ? { event: SignSocketEvents.INTERPRETATION, data: interpretation }
+      : null
   }
 }
